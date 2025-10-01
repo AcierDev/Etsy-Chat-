@@ -12,11 +12,13 @@
     {
       "matches": [
         "https://www.etsy.com/your/conversations/*",
-        "https://www.etsy.com/messages/*"
+        "https://www.etsy.com/messages/*",
+        "https://www.etsy.com/*/conversations/*",
+        "https://www.etsy.com/*/messages/*"
       ],
       "js": ["content.js"],
       "css": ["styles.css"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ],
   "action": {
