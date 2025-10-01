@@ -17,10 +17,8 @@ class EtsyChatPlus {
     this.apiKey = result.openai_api_key;
 
     // Wait for the page to fully load and find the reply area
-    this.waitForElement('[data-clg-id="WtButton"]', () => {
-      console.log("Found Etsy interface elements, injecting ChatGPT button...");
-      this.injectChatGPTButton();
-    });
+    // Use multiple strategies to ensure we catch the page when it's ready
+    this.waitForMessageArea();
 
     // Listen for messages from background script
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -28,6 +26,179 @@ class EtsyChatPlus {
         this.apiKey = request.apiKey;
       }
     });
+  }
+
+  waitForMessageArea() {
+    console.log("Waiting for message area to load...");
+    
+    // Multiple detection strategies
+    const strategies = [
+      // Strategy 1: Look for quick replies button
+      () => document.querySelector('[aria-label="Quick replies"]'),
+      // Strategy 2: Look for message input textarea
+      () => document.querySelector('textarea[placeholder*="message"], textarea[name*="message"]'),
+      // Strategy 3: Look for compose area
+      () => document.querySelector('[class*="compose"], [class*="message-input"], [class*="conversation-input"]'),
+      // Strategy 4: Look for any message-related container
+      () => document.querySelector('[class*="message"], [class*="conversation"], [class*="chat"]'),
+      // Strategy 5: Look for any button that might be in the toolbar
+      () => document.querySelector('button[class*="toolbar"], button[class*="compose"]'),
+      // Strategy 6: Look for any textarea (fallback)
+      () => document.querySelector('textarea')
+    ];
+
+    let attempts = 0;
+    const maxAttempts = 60; // 30 seconds total (500ms * 60)
+    let foundElements = false;
+    
+    const checkForElements = () => {
+      if (foundElements) return; // Stop if already found
+      
+      attempts++;
+      console.log(`Checking for message area elements (attempt ${attempts}/${maxAttempts})...`);
+      
+      // Check each strategy
+      for (let i = 0; i < strategies.length; i++) {
+        const element = strategies[i]();
+        if (element) {
+          console.log(`Found element using strategy ${i + 1}:`, element);
+          console.log("Found Etsy interface elements, injecting ChatGPT button...");
+          this.injectChatGPTButton();
+          foundElements = true;
+          return;
+        }
+      }
+      
+      // Log current page state for debugging
+      if (attempts % 10 === 0) {
+        console.log("Page state check:", {
+          totalElements: document.querySelectorAll("*").length,
+          hasTextareas: document.querySelectorAll("textarea").length,
+          hasButtons: document.querySelectorAll("button").length,
+          bodyClasses: document.body.className,
+          url: window.location.href
+        });
+      }
+      
+      // Continue checking or timeout
+      if (attempts < maxAttempts && !foundElements) {
+        setTimeout(checkForElements, 500);
+      } else if (!foundElements) {
+        console.warn("Timeout waiting for message area. Extension may not work on this page.");
+        console.log("Final page state:", {
+          totalElements: document.querySelectorAll("*").length,
+          url: window.location.href
+        });
+      }
+    };
+    
+    // Set up MutationObserver to watch for dynamic content changes
+    this.setupMutationObserver();
+    
+    // Set up URL change listener for SPA navigation
+    this.setupUrlChangeListener();
+    
+    // Start checking after a short delay to let initial page load
+    setTimeout(checkForElements, 1000);
+  }
+
+  setupMutationObserver() {
+    console.log("Setting up MutationObserver for dynamic content...");
+    
+    const observer = new MutationObserver((mutations) => {
+      // Check if any new elements were added that might be the message area
+      let shouldCheck = false;
+      
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          // Check if any added nodes contain message-related elements
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node;
+              // Check if this element or its children contain message area indicators
+              if (element.querySelector && (
+                element.querySelector('[aria-label="Quick replies"]') ||
+                element.querySelector('textarea[placeholder*="message"]') ||
+                element.querySelector('[class*="compose"]') ||
+                element.querySelector('[class*="message-input"]')
+              )) {
+                shouldCheck = true;
+              }
+            }
+          });
+        }
+      });
+      
+      if (shouldCheck && !document.getElementById("etsy-chatgpt-button")) {
+        console.log("MutationObserver detected potential message area changes, checking for injection...");
+        setTimeout(() => {
+          if (!document.getElementById("etsy-chatgpt-button")) {
+            this.injectChatGPTButton();
+          }
+        }, 500);
+      }
+    });
+    
+    // Start observing
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    console.log("MutationObserver is now watching for dynamic content changes");
+  }
+
+  setupUrlChangeListener() {
+    console.log("Setting up URL change listener for SPA navigation...");
+    
+    let currentUrl = window.location.href;
+    
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', () => {
+      console.log("URL changed via popstate:", window.location.href);
+      this.handleUrlChange(currentUrl, window.location.href);
+      currentUrl = window.location.href;
+    });
+    
+    // Use MutationObserver to detect URL changes in SPA
+    const urlObserver = new MutationObserver(() => {
+      if (window.location.href !== currentUrl) {
+        console.log("URL changed via SPA navigation:", window.location.href);
+        this.handleUrlChange(currentUrl, window.location.href);
+        currentUrl = window.location.href;
+      }
+    });
+    
+    // Watch for changes in the document title (often changes with URL in SPAs)
+    urlObserver.observe(document.querySelector('title'), {
+      childList: true,
+      characterData: true,
+      subtree: true
+    });
+    
+    console.log("URL change listener is now active");
+  }
+
+  handleUrlChange(oldUrl, newUrl) {
+    console.log("Handling URL change from", oldUrl, "to", newUrl);
+    
+    // Remove existing button if it exists
+    const existingButton = document.getElementById("etsy-chatgpt-button");
+    if (existingButton) {
+      console.log("Removing existing ChatGPT button due to URL change");
+      existingButton.remove();
+    }
+    
+    // Check if we're still on a conversation page
+    if (newUrl.includes('/your/conversations/') || newUrl.includes('/messages/')) {
+      console.log("Still on conversation page, waiting for new message area...");
+      // Wait a bit for the new page to load, then try to inject again
+      setTimeout(() => {
+        this.waitForMessageArea();
+      }, 1000);
+    } else {
+      console.log("No longer on conversation page, stopping injection attempts");
+    }
   }
 
   waitForElement(selector, callback) {
