@@ -1,0 +1,24 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded rectangle background -->
+  <rect width="128" height="128" rx="24" fill="url(#grad)"/>
+  
+  <!-- Lightning bolt icon -->
+  <path d="M74 32L50 72h20l-6 24 24-40H68l6-24z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Chat bubble -->
+  <path d="M88 80c0 4.4-3.6 8-8 8H48l-8 8V56c0-4.4 3.6-8 8-8h32c4.4 0 8 3.6 8 8v24z" fill="white" opacity="0.9"/>
+  
+  <!-- Small dots for typing indicator -->
+  <circle cx="54" cy="68" r="2.5" fill="#667eea"/>
+  <circle cx="64" cy="68" r="2.5" fill="#667eea"/>
+  <circle cx="74" cy="68" r="2.5" fill="#667eea"/>
+</svg>
+

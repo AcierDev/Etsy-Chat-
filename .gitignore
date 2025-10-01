@@ -1,0 +1,46 @@
+# Chrome Extension Development
+
+# Packaged extension files
+*.crx
+*.pem
+*.zip
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+test/
+coverage/
+
+# Environment variables (if you add any local config)
+.env
+.env.local
+config.local.js
+
+# Node modules (if you add build tools later)
+node_modules/
+
+# Distribution directory
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
