@@ -23,7 +23,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     lastRequestTime = currentTime;
 
-    handleChatGPTRequest(request.messages, request.apiKey)
+    handleChatGPTRequest(
+      request.messages,
+      request.apiKey,
+      request.manualInstructions
+    )
       .then((reply) => sendResponse({ reply }))
       .catch((error) => sendResponse({ error: error.message }));
 
@@ -32,7 +36,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-async function handleChatGPTRequest(messages, apiKey) {
+async function handleChatGPTRequest(messages, apiKey, manualInstructions = "") {
   if (!apiKey) {
     throw new Error(
       "OpenAI API key is not set. Please configure it in the extension settings."
@@ -41,7 +45,7 @@ async function handleChatGPTRequest(messages, apiKey) {
 
   try {
     // Convert message history to ChatGPT format
-    const chatMessages = formatMessagesForChatGPT(messages);
+    const chatMessages = formatMessagesForChatGPT(messages, manualInstructions);
 
     // Call OpenAI API
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -101,11 +105,9 @@ async function handleChatGPTRequest(messages, apiKey) {
   }
 }
 
-function formatMessagesForChatGPT(messages) {
+function formatMessagesForChatGPT(messages, manualInstructions = "") {
   // Create a system message to set the context
-  const systemMessage = {
-    role: "system",
-    content: `You are a helpful assistant that helps Etsy sellers craft professional, friendly, and effective replies to their customers. 
+  let systemContent = `You are a helpful assistant that helps Etsy sellers craft professional, friendly, and effective replies to their customers. 
     
 Your replies should be:
 - Professional yet warm and friendly
@@ -115,7 +117,16 @@ Your replies should be:
 - Following Etsy's seller guidelines
 - Natural and conversational
 
-Analyze the conversation history and generate an appropriate reply that addresses the customer's needs while maintaining a positive tone.`,
+Analyze the conversation history and generate an appropriate reply that addresses the customer's needs while maintaining a positive tone.`;
+
+  // Add manual instructions if provided
+  if (manualInstructions && manualInstructions.trim()) {
+    systemContent += `\n\nIMPORTANT: The seller has provided specific instructions for this response. Please incorporate these instructions into your reply: "${manualInstructions.trim()}"`;
+  }
+
+  const systemMessage = {
+    role: "system",
+    content: systemContent,
   };
 
   // Convert message history to ChatGPT format

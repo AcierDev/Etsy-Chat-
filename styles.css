@@ -1,6 +1,446 @@
 /* Etsy Chat+ Extension Styles */
 /* Clean, minimalist design with smooth animations */
 
+/* Expand Button */
+.etsy-expand-btn {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 1000 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px !important;
+  border: 1px solid #e8e8e8 !important;
+  border-radius: 8px !important;
+  background: white !important;
+  color: #667eea !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.etsy-expand-btn:hover {
+  background: #667eea !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+.etsy-expand-btn:active {
+  transform: scale(0.98) !important;
+}
+
+/* Inline Expand Button (next to AI button) */
+.etsy-expand-btn-inline {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 12px !important;
+  border: 1px solid #e8e8e8 !important;
+  border-radius: 6px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.15) !important;
+  margin-left: 8px !important;
+  gap: 6px !important;
+}
+
+.etsy-expand-btn-inline:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25) !important;
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%) !important;
+}
+
+.etsy-expand-btn-inline:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Expand Modal Overlay */
+.etsy-expand-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20px;
+}
+
+.etsy-expand-modal-overlay.show {
+  opacity: 1;
+}
+
+.etsy-expand-modal-overlay.show .etsy-expand-modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Expand Modal Container */
+.etsy-expand-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 75px rgba(0, 0, 0, 0.4);
+  width: 95%;
+  max-width: 1600px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95) translateY(20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.expand-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  color: #1f2937;
+  flex-shrink: 0;
+  min-height: 60px;
+}
+
+.expand-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.expand-modal-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Conversation Panel (Left Side - 60%) - Exact Etsy Style */
+.conversation-panel {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e5e7eb;
+  background: #f9fafb; /* Etsy's light grey background */
+  overflow: hidden;
+}
+
+.conversation-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #f9fafb;
+}
+
+.conversation-date-header {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 8px 0 16px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.expand-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 75%;
+  animation: slideInMessage 0.3s ease-out;
+}
+
+@keyframes slideInMessage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.buyer-message {
+  align-self: flex-start;
+}
+
+.seller-message {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 1px solid #d1d5db;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+}
+
+.customer-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.message-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.message-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.message-role {
+  display: none; /* Hide role labels to match Etsy exactly */
+}
+
+.message-content {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.buyer-message .message-content {
+  background: white;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px 12px 12px 4px; /* Less rounded on left side to match avatar */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.seller-message .message-content {
+  background: #f3f4f6; /* Light grey background like Etsy's seller messages */
+  color: #1f2937; /* Same dark grey text as customer messages */
+  border: 1px solid #e5e7eb;
+  border-radius: 12px 12px 4px 12px; /* Less rounded on right side to match avatar */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.message-timestamp {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.no-messages {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 15px;
+  padding: 40px;
+}
+
+/* AI Panel (Right Side - 40%) */
+.ai-panel {
+  flex: 0 0 40%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  overflow: hidden;
+}
+
+.ai-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  background: #f9fafb;
+}
+
+.ai-panel-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.btn-generate {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #d12c4e;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-generate:hover {
+  background: #b02542;
+}
+
+.btn-generate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-response-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+  min-height: 0;
+  background: white;
+  gap: 16px;
+}
+
+.ai-instructions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.instructions-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.ai-instructions-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1f2937;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  resize: none;
+  transition: border-color 0.2s ease;
+  background: #f9fafb;
+  overflow-y: auto;
+}
+
+.ai-instructions-textarea:focus {
+  outline: none;
+  border-color: #d12c4e;
+  background: white;
+  box-shadow: 0 0 0 2px rgba(209, 44, 78, 0.1);
+}
+
+.ai-instructions-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.ai-generated-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.response-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.ai-response-textarea {
+  flex: 1;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1f2937;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  resize: none;
+  transition: border-color 0.2s ease;
+  background: white;
+  overflow-y: auto;
+}
+
+.ai-response-textarea:focus {
+  outline: none;
+  border-color: #d12c4e;
+  box-shadow: 0 0 0 2px rgba(209, 44, 78, 0.1);
+}
+
+.ai-response-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.ai-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.ai-panel-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
 /* ChatGPT Button */
 .chatgpt-btn {
   display: inline-flex !important;
@@ -112,20 +552,21 @@
 .modal-close {
   background: transparent;
   border: none;
-  color: white;
+  color: #6b7280;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
   transition: all 0.2s ease;
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 .modal-close:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
+  background: #f3f4f6;
+  color: #374151;
 }
 
 /* Modal Body */
@@ -369,6 +810,51 @@
     width: 100%;
     justify-content: center;
   }
+
+  /* Expand Modal Mobile Styles */
+  .etsy-expand-modal {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    max-width: none;
+  }
+
+  .expand-modal-content {
+    flex-direction: column;
+  }
+
+  .conversation-panel {
+    flex: 0 0 50%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .ai-panel {
+    flex: 0 0 50%;
+  }
+
+  .ai-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .btn-generate {
+    width: 100%;
+  }
+
+  .ai-panel-footer {
+    flex-direction: column;
+  }
+
+  .ai-panel-footer .btn-primary,
+  .ai-panel-footer .btn-secondary {
+    width: 100%;
+  }
+
+  .ai-instructions-textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
 }
 
 /* Tablet and medium screens */
@@ -381,6 +867,19 @@
   .reply-textarea {
     min-height: 180px;
     max-height: 350px;
+  }
+
+  /* Expand Modal Tablet Styles */
+  .etsy-expand-modal {
+    width: 95%;
+  }
+
+  .conversation-panel {
+    flex: 0 0 55%;
+  }
+
+  .ai-panel {
+    flex: 0 0 45%;
   }
 }
 
@@ -438,5 +937,61 @@
 
   .btn-secondary:hover {
     background: #4b5563;
+  }
+}
+
+/* Instructions Section in Quick Modal */
+.instructions-section {
+  margin-bottom: 20px;
+}
+
+.instructions-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.instructions-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+  background: #f9fafb;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.instructions-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.response-section {
+  margin-top: 20px;
+}
+
+/* Dark mode for instructions */
+@media (prefers-color-scheme: dark) {
+  .instructions-textarea {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+  }
+
+  .instructions-textarea:focus {
+    background: #4b5563;
+    border-color: #667eea;
+  }
+
+  .instructions-label {
+    color: #d1d5db;
   }
 }
